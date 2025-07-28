@@ -1,0 +1,376 @@
+{
+	"info": {
+		"_postman_id": "5de166e7-e65e-4cca-9bfd-03fdaa1b9ecf",
+		"name": "REM_QA_CASE_API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24632358",
+		"_collection_link": "https://bold-meadow-212921.postman.co/workspace/YUKATECH~d9a98aec-f606-487c-8101-fcde0f57604f/collection/24632358-5de166e7-e65e-4cca-9bfd-03fdaa1b9ecf?action=share&source=collection_link&creator=24632358"
+	},
+	"item": [
+		{
+			"name": "Login with valid credentials",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonResponse = pm.response.json();\r",
+							"var token = jsonResponse.token;\r",
+							"var refresh_token = jsonResponse.refresh_token;\r",
+							"\r",
+							"\r",
+							"pm.environment.set(\"access_token\",token);\r",
+							"pm.environment.set(\"refresh_token\",refresh_token);\r",
+							"\r",
+							"pm.test(\"Response should be success\", function () {\r",
+							"    \r",
+							"    pm.expect(jsonResponse.success).to.eql(true);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role_group\": \"company\",\r\n    \"email\": \"{{mail}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Attempt with invalid credentials (Negative)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status should be 422\", function () {\r",
+							"    pm.response.to.have.status(422);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response should contain error message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"The given data was invalid.\");\r",
+							"    pm.expect(jsonData.success).to.eql(false)\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role_group\": \"company\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a Event Location",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonResponse = pm.response.json();\r",
+							"\r",
+							"event_id = jsonResponse.data.id ; \r",
+							"\r",
+							"pm.collectionVariables.set(\"eventId\", event_id);\r",
+							"\r",
+							"pm.test(\"Status code should be 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Test\",\r\n    \"event_area_type\": \"RADIUS\",\r\n    \"event_area\": [\r\n        {\r\n            \"latitude\": 50.07371159150346,\r\n            \"longitude\": 8.758718294999822,\r\n            \"radius\": 150\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/event-locations",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"event-locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Event Lists",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code should be 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"let jsonData;\r",
+							"pm.test(\"Response should be Received as JSON \", function () {\r",
+							"    pm.expect(() => {\r",
+							"        jsonData = pm.response.json();\r",
+							"    }).to.not.throw();\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/event-locations",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"event-locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Attempt to Get Event List without valid Token (Negative)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code should be 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body should contain 'User is not logged in.'\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"User is not logged in.\");\r",
+							"\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/event-locations",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"event-locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Event",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response should be success\", function () {\r",
+							"    \r",
+							"    var jsonResponse = pm.response.json();  \r",
+							"    pm.expect(jsonResponse.success).to.eql(true);\r",
+							"    pm.expect(jsonResponse.data).to.eql(true);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Test Updated\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/event-locations/{{eventId}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"event-locations",
+						"{{eventId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Event Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response should be success\", function () {\r",
+							"    \r",
+							"    var jsonResponse = pm.response.json();  \r",
+							"    pm.expect(jsonResponse.success).to.eql(true);\r",
+							"    pm.expect(jsonResponse.data).to.eql(true);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Test\",\r\n    \"event_area_type\": \"RADIUS\",\r\n    \"event_area\": [\r\n        {\r\n            \"latitude\": 50.07371159150346,\r\n            \"longitude\": 8.758718294999822,\r\n            \"radius\": 150\r\n        }\r\n    ]\r\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/event-locations/{{eventId}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"event-locations",
+						"{{eventId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "eventId",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
